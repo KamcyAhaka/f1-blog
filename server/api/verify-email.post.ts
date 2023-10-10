@@ -5,6 +5,6 @@ export default defineEventHandler(async (event) => {
   const userStore = useUserStore();
   const user = userStore.user as User;
   await sendEmailVerification(user, {
-    url: 'http://localhost:3000/admin/verified',
+    url: 'https://f1-blog.netlify.app/admin/verified',
   });
 });

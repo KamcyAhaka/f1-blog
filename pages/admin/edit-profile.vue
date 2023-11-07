@@ -13,36 +13,13 @@
         label="Username"
         type="text"
         required="true"
+        v-model="userProfile.username"
       />
-      <div class="gender-input-container-wrapper flex flex-col gap-1 py-2">
-        <p class="">Gender</p>
-        <div class="gender-input-container-wrapper flex items-start gap-2">
-          <CustomInput
-            id="male"
-            name="gender"
-            label="Male"
-            inputID="Male"
-            type="radio"
-            value="Male"
-          />
-          <CustomInput
-            id="female"
-            name="gender"
-            label="Female"
-            inputID="Female"
-            type="radio"
-            value="Female"
-          />
-          <CustomInput
-            id="no-specify"
-            name="gender"
-            label="Don't specify"
-            inputID="no-specify"
-            type="radio"
-            value="no-specify"
-          />
-        </div>
-      </div>
+      <CustomRadioInput
+        container-label="Gender"
+        input-name="gender"
+        :radios="genderRadios"
+      />
       <CustomInput
         id="phone"
         name="phone"
@@ -51,21 +28,20 @@
         placeholder="+123 4567 890"
         required="true"
       />
-      <!-- <CustomSelect @option-selected="saveSelectedOption">
-          <template #options>
-            <option
-              v-for="country in CountriesList"
-              :key="country.iso3"
-              :value="country.country"
-            >
-              {{ country.country }}
-            </option>
-          </template>
-        </CustomSelect> -->
+      <CustomSelect @option-selected="saveSelectedOption">
+        <template #options>
+          <option
+            v-for="country in CountriesList"
+            :key="country.iso3"
+            :value="country.country"
+          >
+            {{ country.country }}
+          </option>
+        </template>
+      </CustomSelect>
       <CallToAction
-        type="submit"
         button-text="Edit Profile"
-        :colored="true"
+        class="bg-gray-800 rounded-lg text-white"
       />
     </NuxtLayout>
   </NuxtLayout>
@@ -83,67 +59,65 @@ definePageMeta({
 })
 
 import { useUserStore } from '~~/stores/user'
-import type ToastType from '~/types/Toast';
+import type Toast from '~/types/Toast';
+import type Country from '~/types/Country';
 
 const userStore = useUserStore()
 
 const showToast = ref(false)
+const nationality = ref("")
 
 const { useToastNotification } = useToast()
 
-const toast = reactive<ToastType>({
+const toast = reactive<Toast>({
   type: 'success',
   text: ''
 })
 
-/* const handleSubmit = async (event: Event) => {
-    // @ts-ignore
-  const formData = new FormData(event.target)
+const genderRadios = [
+  {
+    id: "male",
+    label: "Male",
+    value: "Male",
+  },
+  {
+    id: "female",
+    label: "Female",
+    value: "Female",
+  },
+  {
+    id: "no-specify",
+    label: "Don't specify",
+    value: "Don't specify",
+  },
+]
 
-  const userID = userStore.user?._id
+const userProfile = reactive({
+  username: "",
+  gender: "",
+  mobileNumber: "",
+  nationality: ""
+})
 
-  try {
-    const {data, error} = await useFetch(`http://localhost:1337/api/users/:${userID}`, {
-      method: 'PUT',
-      body: formData,
-      credentials: 'include'
-    })
+const saveSelectedOption = (option: string) => {
+  nationality.value = option
+  console.log(nationality.value);
+};
 
-    if (error && error.value?.statusCode === 401 ) {
-      useToastNotification(toast, 'error', 'Invalid email or password', showToast)
-      return
-    }
-
-    if (error && error.value?.statusCode === 403 ) {
-      useToastNotification(toast, 'error', 'There was a problem authenticating your request!', showToast)
-      return
-    }
-
-    await userStore.getCurrentUser()
-
-    const userData = await $fetch('http://localhost:1337/api/me', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      console.log(userData);
-
-    useToastNotification(toast, 'success', 'Login successful', showToast, '/profile/')
-
-  } catch (error) {
-    useToastNotification(toast, 'error', 'There was an error sending your request!', showToast)
-  }
-}; */
-
-// const saveSelectedOption = (option) => (nationality.value = option);
-
-const CountriesList = ref([]);
+const CountriesList: Ref<Country[]> = ref([]);
 
 // (async () => {
 //   try {
-//     let { data } = await useFetch('https://countriesnow.space/api/v0.1/countries');
-//     let countries = data.value.data;
-//     CountriesList.value = countries;
+//     let { data, error } = await useFetch<{ error: boolean, msg: string, data: Country[] }>('https://countriesnow.space/api/v0.1/countries');
+// 
+//     if (error.value) {
+//       useToastNotification(toast, 'error', 'There was an error sending your request!', showToast)
+//     }
+// 
+//     if (data.value) {
+//       let countries = data.value.data;
+//       CountriesList.value = countries;
+//     }
 //   } catch (error) {
 //     console.log(error);
 //   }

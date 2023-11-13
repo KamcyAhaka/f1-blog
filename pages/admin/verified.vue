@@ -29,7 +29,6 @@
 <script setup lang="ts">
 import type Toast from '~/types/Toast';
 import { useUserStore } from '~/stores/user';
-import { useCredentialStore } from '~/stores/credentials';
 import { User } from 'firebase/auth';
 
 
@@ -49,21 +48,12 @@ const toast = reactive<Toast>({
 const currentRoute = router.currentRoute.value
 const oobCode = currentRoute.query.oobCode as string
 
-const credentialStore = useCredentialStore()
 const userStore = useUserStore()
-
-
-console.log(credentialStore.credentials.email);
-console.log(credentialStore.credentials.password);
 
 try {
   const { data, error } = await useFetch<{ verifiedUser: User }>(`/api/verify-email`, {
     method: "POST",
     query: { oobCode },
-    body: {
-      email: credentialStore.credentials.email,
-      password: credentialStore.credentials.password
-    }
   })
 
   if (error && error.value?.statusCode === 500) {

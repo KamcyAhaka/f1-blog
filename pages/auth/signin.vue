@@ -39,7 +39,6 @@
 <script setup lang="ts">
 import type Toast from '~/types/Toast';
 import { useUserStore } from '~/stores/user';
-import { useCredentialStore } from '~/stores/credentials';
 import { User } from 'firebase/auth';
 
 useHead({
@@ -47,7 +46,6 @@ useHead({
 })
 
 const userStore = useUserStore()
-const credentialStore = useCredentialStore()
 
 const { useToastNotification } = useToast()
 const showToast = ref(false)
@@ -61,12 +59,6 @@ const userPassword = ref("")
 
 
 const handleSubmit = async () => {
-
-  credentialStore.updateCredentials(userEmail.value, userPassword.value)
-
-  console.log(credentialStore.credentials.email);
-  console.log(credentialStore.credentials.password);
-
   try {
 
     const { data, error } = await useFetch<{ user: User }>('/api/signin', {

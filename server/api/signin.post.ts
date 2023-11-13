@@ -7,16 +7,26 @@ export default defineEventHandler(async (event) => {
     email: string;
     password: string;
   }>(event);
-  const { throwError } = useServerError();
+  const { throwAuthError } = useServerError();
 
   try {
     const credentials = await signInWithEmailAndPassword(auth, email, password);
 
     if (credentials) {
+      const credentialsCookie = setCookie(
+        event,
+        'credentials',
+        JSON.stringify({ email, password }),
+        {
+          maxAge: 365 * 24 * 24,
+          httpOnly: true,
+        }
+      );
+
       return credentials;
     }
   } catch (error) {
     let authError = error as AuthError;
-    throwError(authError);
+    throwAuthError(authError);
   }
 });

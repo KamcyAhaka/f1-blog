@@ -5,32 +5,32 @@ import {
 } from 'firebase/auth';
 import useServerError from '~/composables/useServerError';
 import { auth } from '~/firebase';
+import CredentialsType from '~/types/CredentialsType';
 
 export default defineEventHandler(async (event) => {
   const { oobCode, lang } = getQuery<{ oobCode: string; lang: string }>(event);
 
-  const { email, password } = await readBody<{
-    email: string;
-    password: string;
-  }>(event);
+  const credentialsCookie = getCookie(event, 'credentials');
 
-  const { throwError } = useServerError();
+  const parsedCredentials: CredentialsType = JSON.parse(
+    credentialsCookie as string
+  );
+
+  const { throwAuthError } = useServerError();
 
   try {
     await applyActionCode(auth, String(oobCode));
 
-    const credentials = await signInWithEmailAndPassword(auth, email, password);
+    const credentials = await signInWithEmailAndPassword(
+      auth,
+      parsedCredentials.email,
+      parsedCredentials.password
+    );
 
-    console.log('Email verified');
-
-    return {
-      verifiedUser: credentials.user,
-      // email: email.value,
-      // password: password.value,
-    };
+    return credentials.user;
   } catch (error) {
     let authError = error as AuthError;
 
-    throwError(authError);
+    throwAuthError(authError);
   }
 });

@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout name="profile-layout">
     <NuxtLayout
-      @handle-submit=""
+      @handle-submit="updateProfile"
       name="form-layout"
       formHeader="Edit your Profile"
       ref="form"
@@ -15,11 +15,22 @@
         required="true"
         v-model="userProfile.username"
       />
-      <CustomRadioInput
-        container-label="Gender"
-        input-name="gender"
-        :radios="genderRadios"
-      />
+
+      <fieldset class="gender-input-container flex flex-col gap-1 py-2">
+        <legend>
+          Please select your gender
+        </legend>
+
+        <div class="gender-input-container flex gap-2">
+          <CustomRadioInput
+            v-for="radio in genderRadios"
+            :radio="radio"
+            input-name="gender"
+            @gender-selected="saveSelectedGender"
+          />
+        </div>
+      </fieldset>
+
       <CustomInput
         id="phone"
         name="phone"
@@ -27,6 +38,18 @@
         type="number"
         placeholder="+123 4567 890"
         required="true"
+        v-model="userProfile.mobileNumber"
+      />
+
+      <CustomFileInput
+        id="photoUrl"
+        name="photoUrl"
+        label="Display picture"
+        type="file"
+        accepts=".png"
+        placeholder=""
+        required="true"
+        v-model="userProfile.photoUrl"
       />
       <CustomSelect @option-selected="saveSelectedOption">
         <template #options>
@@ -58,6 +81,8 @@ definePageMeta({
   middleware: ['user-auth', 'verify-user']
 })
 
+import { User } from 'firebase/auth';
+
 import { useUserStore } from '~~/stores/user'
 import type Toast from '~/types/Toast';
 import type Country from '~/types/Country';
@@ -65,7 +90,6 @@ import type Country from '~/types/Country';
 const userStore = useUserStore()
 
 const showToast = ref(false)
-const nationality = ref("")
 
 const { useToastNotification } = useToast()
 
@@ -86,9 +110,9 @@ const genderRadios = [
     value: "Female",
   },
   {
-    id: "no-specify",
-    label: "Don't specify",
-    value: "Don't specify",
+    id: "others",
+    label: "Others",
+    value: "Others",
   },
 ]
 
@@ -96,32 +120,57 @@ const userProfile = reactive({
   username: "",
   gender: "",
   mobileNumber: "",
-  nationality: ""
+  nationality: "",
+  photoUrl: ""
 })
 
 const saveSelectedOption = (option: string) => {
-  nationality.value = option
-  console.log(nationality.value);
+  userProfile.nationality = option
+};
+
+const saveSelectedGender = (option: string) => {
+  userProfile.gender = option
 };
 
 const CountriesList: Ref<Country[]> = ref([]);
 
-// (async () => {
-//   try {
-//     let { data, error } = await useFetch<{ error: boolean, msg: string, data: Country[] }>('https://countriesnow.space/api/v0.1/countries');
-// 
-//     if (error.value) {
-//       useToastNotification(toast, 'error', 'There was an error sending your request!', showToast)
-//     }
-// 
-//     if (data.value) {
-//       let countries = data.value.data;
-//       CountriesList.value = countries;
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })(); 
+
+onMounted(async () => {
+  try {
+    let { data, error } = await useFetch<{ error: boolean, msg: string, data: Country[] }>('https://countriesnow.space/api/v0.1/countries');
+
+    if (error.value) {
+      useToastNotification(toast, 'error', 'There was an error sending your request!', showToast)
+    }
+
+    if (data.value) {
+      let countries = data.value.data;
+      CountriesList.value = countries;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+const updateProfile = async () => {
+  try {
+    const { data, error } = await useFetch<{ user: User }>("/api/update-profile", {
+      method: "POST",
+      body: userProfile
+    })
+
+    if (error.value) {
+      useToastNotification(toast, "error", error.value.statusMessage!, showToast)
+    }
+
+    if (data.value) {
+      userStore.user = data.value.user
+      useToastNotification(toast, "success", "Profile updated successfully", showToast, "/admin/")
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

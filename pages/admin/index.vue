@@ -80,11 +80,12 @@ const toast = reactive<Toast>({
 
 const userStore = useUserStore()
 
+
 const logUserOut = async () => {
   try {
-    await useFetch('/api/signout')
+    await useFetch('/api/signout', { method: "POST" })
 
-    userStore.user = null;
+    userStore.user = null
 
     useToastNotification(toast, 'success', 'You have been successfully logged out.', showToast, '/')
   } catch (error) {

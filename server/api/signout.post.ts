@@ -3,12 +3,12 @@ import useServerError from '~/composables/useServerError';
 import { auth } from '~/firebase';
 
 export default defineEventHandler(async (event) => {
-  const { throwError } = useServerError();
+  const { throwAuthError } = useServerError();
 
   try {
     await signOut(auth);
   } catch (error) {
     let authError = error as AuthError;
-    throwError(authError);
+    throwAuthError(authError);
   }
 });

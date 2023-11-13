@@ -1,7 +1,8 @@
 import { AuthError } from 'firebase/auth';
+import { FirestoreError } from 'firebase/firestore';
 
 export default () => {
-  const throwError = (authError: AuthError) => {
+  const throwAuthError = (authError: AuthError) => {
     switch (authError.code) {
       case 'auth/user-not-found':
         throw createError({
@@ -35,5 +36,61 @@ export default () => {
     }
   };
 
-  return { throwError };
+  const throwDbError = (dbError: FirestoreError) => {
+    switch (dbError.code) {
+      case 'aborted':
+        throw createError({
+          statusMessage: 'Action aborted.',
+          message: dbError.code,
+        });
+      case 'already-exists':
+        throw createError({
+          statusMessage: 'Document already exists.',
+          message: dbError.code,
+        });
+      case 'cancelled':
+        throw createError({
+          statusMessage: 'Action cancelled.',
+          message: dbError.code,
+        });
+      case 'data-loss':
+        throw createError({
+          statusMessage: 'Data lost.',
+          message: dbError.code,
+        });
+      case 'permission-denied':
+        throw createError({
+          statusMessage: 'You are not permitted to perform this action.',
+          message: dbError.code,
+        });
+      case 'internal':
+        throw createError({
+          statusMessage: 'Internal systems down.',
+          message: dbError.code,
+        });
+      case 'unauthenticated':
+        throw createError({
+          statusMessage: 'This action required authentication.',
+          message: dbError.code,
+        });
+      case 'unimplemented':
+        throw createError({
+          statusMessage: 'Operation not implemented.',
+          message: dbError.code,
+        });
+      case 'failed-precondition':
+        throw createError({
+          statusMessage: 'Conditions have not being met.',
+          message: dbError.code,
+        });
+
+      default:
+        throw createError({
+          statusMessage: dbError.message,
+          message: dbError.code,
+        });
+    }
+  };
+
+  return { throwAuthError, throwDbError };
 };

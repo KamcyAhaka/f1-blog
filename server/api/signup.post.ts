@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     email: string;
     password: string;
   }>(event);
-  const { throwError } = useServerError();
+  const { throwAuthError } = useServerError();
 
   try {
     const credentials = await createUserWithEmailAndPassword(
@@ -26,6 +26,6 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error) {
     let authError = error as AuthError;
-    throwError(authError);
+    throwAuthError(authError);
   }
 });

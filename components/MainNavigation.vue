@@ -1,5 +1,8 @@
 <template>
-  <header class="header">
+  <header
+    class="header"
+    ref="mainNavigation"
+  >
     <nav class="nav flex items-center justify-evenly bg-gray-100 min-h-[10vh] lg:justify-around lg:min-h-[15vh]">
       <NuxtLink to="/">F1 Blog</NuxtLink>
       <menu
@@ -76,17 +79,51 @@
       </button>
     </nav>
   </header>
+  <button
+    class="back-to-top-btn fixed bottom-52 right-10 z-[99] drop-shadow-xl lg:right-20"
+    ref="backToTopBtn"
+  >
+    <client-only>
+      <font-awesome-icon
+        class="text-white bg-gray-700 p-2 aspect-square rounded-full"
+        :icon="['fas', 'arrow-up']"
+      />
+    </client-only>
+  </button>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+const mainNavigation: Ref<HTMLElement | null> = ref(null)
+const backToTopBtn: Ref<HTMLButtonElement | null> = ref(null)
 
 const menuOpenState = ref(false)
 
 const toggleMenuOpenState = () => menuOpenState.value = !menuOpenState.value
+
+const showBackToTopBtn = (backToTopBtn: HTMLButtonElement, entries: HTMLElement) => {
+  const intersectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      console.log(entry.target);
+      if (!entry.isIntersecting) {
+        backToTopBtn.classList.add("show")
+      } else {
+        backToTopBtn.classList.remove("show")
+      }
+    });
+  }, {});
+
+  intersectionObserver.observe(entries);
+}
+
+onMounted(() => {
+
+  if (mainNavigation.value && backToTopBtn.value) {
+    showBackToTopBtn(backToTopBtn.value, mainNavigation.value)
+  }
+})
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .nav__menu__item.active {
   @apply bg-white shadow-md;
 }
@@ -95,5 +132,16 @@ const toggleMenuOpenState = () => menuOpenState.value = !menuOpenState.value
   @media screen and (min-width: 1024px) {
     @apply static flex items-center justify-center min-h-0 bg-transparent shadow-none max-w-[60%] left-[unset] translate-x-[unset] text-black pt-0 top-[unset] gap-3;
   }
+}
+
+.back-to-top-btn {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all .3s ease;
+}
+
+.back-to-top-btn.show {
+  opacity: 1;
+  transform: translateY(0)
 }
 </style>

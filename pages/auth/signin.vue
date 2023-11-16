@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import type Toast from '~/types/Toast';
 import { useUserStore } from '~/stores/user';
-import { User } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 
 useHead({
   title: 'F1 Blog || Sign In'

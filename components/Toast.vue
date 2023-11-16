@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import ToastType from '~/types/Toast'
+import type ToastType from '~/types/Toast'
 
 const props = defineProps<{
   toast: ToastType

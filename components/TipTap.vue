@@ -42,25 +42,54 @@
     </div>
 
     <div class="text-alignment-btns">
-      <button>
+      <button
+        @click="editor.chain().focus().setTextAlign('left').run()"
+        :class="{ 'is-active': editor.isActive({ textAlign: 'left' }) }"
+      >
         <client-only>
           <font-awesome-icon :icon="['fas', 'align-left']" />
         </client-only>
       </button>
-      <button>
+      <button
+        @click="editor.chain().focus().setTextAlign('right').run()"
+        :class="{ 'is-active': editor.isActive({ textAlign: 'right' }) }"
+      >
         <client-only>
           <font-awesome-icon :icon="['fas', 'align-right']" />
         </client-only>
       </button>
-      <button>
+      <button
+        @click="editor.chain().focus().setTextAlign('justify').run()"
+        :class="{ 'is-active': editor.isActive({ textAlign: 'justify' }) }"
+      >
         <client-only>
           <font-awesome-icon :icon="['fas', 'align-justify']" />
         </client-only>
       </button>
-      <button>
+      <button
+        @click="editor.chain().focus().setTextAlign('center').run()"
+        :class="{ 'is-active': editor.isActive({ textAlign: 'center' }) }"
+      >
         <client-only>
           <font-awesome-icon :icon="['fas', 'align-center']" />
         </client-only>
+      </button>
+      <button @click="editor.chain().focus().unsetTextAlign().run()">
+        <svg
+          width="20px"
+          height="20px"
+          viewBox="0 0 24 24"
+          id="align-left-slash"
+          data-name="Flat Line"
+          xmlns="http://www.w3.org/2000/svg"
+          class="icon flat-line"
+        >
+          <path
+            id="primary"
+            d="M21,6H18M12,6H3m14,6H12M6,12H3m18,6H6M21,3,3,21"
+            style="fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
+          ></path>
+        </svg>
       </button>
     </div>
     <div class="list-formatting-btns">
@@ -286,6 +315,7 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from "@tiptap/extension-underline";
 import { CharacterCount } from "@tiptap/extension-character-count";
+import { TextAlign } from "@tiptap/extension-text-align";
 
 
 
@@ -294,8 +324,14 @@ const editor = useEditor({
   extensions: [
     StarterKit,
     Underline,
-    CharacterCount
-  ],
+    CharacterCount,
+    TextAlign
+  ]
+})
+
+TextAlign.configure({
+  types: ['heading', 'paragraph'],
+  alignments: ['left', 'right', 'justify', 'center']
 })
 
 </script>

@@ -103,7 +103,6 @@ const toggleMenuOpenState = () => menuOpenState.value = !menuOpenState.value
 const showBackToTopBtn = (backToTopBtn: HTMLButtonElement, entries: HTMLElement) => {
   const intersectionObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      console.log(entry.target);
       if (!entry.isIntersecting) {
         backToTopBtn.classList.add("show")
       } else {

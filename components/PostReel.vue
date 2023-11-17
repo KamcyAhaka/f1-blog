@@ -4,8 +4,8 @@
   >
     <span class="post-tag text-sm font-bold text-white">{{ props.post.tag }}
     </span>
-    <h2 class="post-title text-2xl font-bold text-white">{{props.post.title}}</h2>
-    <p class="post-reel text-sm text-gray-300">{{props.post.text}}</p>
+    <h2 class="post-title text-2xl font-bold text-white">{{ props.post.title }}</h2>
+    <p class="post-reel text-sm text-gray-300">{{ props.post.text }}</p>
     <CallToAction
       button-text="Read more"
       class="bg-white text-gray-700 rounded-full px-10 text-xs"
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import PostReel from '~/types/PostReel'
+import type PostReel from '~/types/PostReel'
 
 const props = defineProps<{
   post: PostReel

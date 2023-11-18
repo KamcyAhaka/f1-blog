@@ -3,10 +3,11 @@
     <NuxtLayout
       name="form-layout"
       form-header="Sign into your account"
-      class="md:basis-1/2 lg:basis-1/2"
+      class="gap-5 md:basis-1/2 lg:basis-1/2"
       @handle-submit="handleSubmit"
     >
       <CustomInput
+        class="mx-auto"
         name="user-email"
         label="Email"
         type="email"
@@ -15,6 +16,7 @@
         v-model="userEmail"
       />
       <CustomInput
+        class="mx-auto"
         name="user-password"
         label="Password"
         type="password"
@@ -24,7 +26,7 @@
       />
       <CallToAction
         button-text="Sign in"
-        class="bg-gray-800 rounded-lg text-white"
+        class="bg-gray-800 rounded-lg text-white mx-auto"
       />
     </NuxtLayout>
   </NuxtLayout>

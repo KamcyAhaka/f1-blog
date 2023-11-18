@@ -3,10 +3,11 @@
     <NuxtLayout
       name="form-layout"
       form-header="Create an account"
-      class="md:basis-1/2 lg:basis-1/2"
+      class="gap-5 md:basis-1/2 lg:basis-1/2"
       @handle-submit="handleSubmit"
     >
       <CustomInput
+        class="mx-auto"
         name="name"
         label="Username"
         type="text"
@@ -14,6 +15,7 @@
         required="true"
       />
       <CustomInput
+        class="mx-auto"
         name="email"
         label="Email"
         type="email"
@@ -22,6 +24,7 @@
         v-model="email"
       />
       <CustomInput
+        class="mx-auto"
         name="password"
         label="Password"
         type="password"
@@ -30,6 +33,7 @@
         required="true"
       />
       <CustomInput
+        class="mx-auto"
         name="password-confirmation"
         label="Confirm Password"
         type="password"
@@ -38,7 +42,7 @@
       />
       <CallToAction
         button-text="Create account"
-        class="bg-gray-800 rounded-lg text-white"
+        class="bg-gray-800 rounded-lg text-white mx-auto"
       />
     </NuxtLayout>
   </NuxtLayout>

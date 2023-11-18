@@ -1,10 +1,11 @@
 <template>
   <div
-    class="menu-controls mx-auto flex items-center gap-2 bg-gray-200 rounded-lg overflow-scroll whitespace-nowrap text-center shadow-md"
+    class="menu-controls mx-auto max-w-xl flex items-center gap-2 bg-gray-800 text-white rounded-t-lg overflow-scroll whitespace-nowrap text-center shadow-md"
     v-if="editor"
   >
     <div class="text-formatting-btns">
       <button
+        title="Bold"
         @click="editor.chain().focus().toggleBold().run()"
         :disabled="!editor.can().chain().focus().toggleBold().run()"
         :class="{ 'is-active': editor.isActive('bold') }"
@@ -14,6 +15,7 @@
         </client-only>
       </button>
       <button
+        title="Italic"
         @click="editor.chain().focus().toggleItalic().run()"
         :disabled="!editor.can().chain().focus().toggleItalic().run()"
         :class="{ 'is-active': editor.isActive('italic') }"
@@ -23,6 +25,7 @@
         </client-only>
       </button>
       <button
+        title="Underline"
         @click="editor.chain().focus().toggleUnderline().run()"
         :class="{ 'is-active': editor.isActive('underline') }"
       >
@@ -31,6 +34,7 @@
         </client-only>
       </button>
       <button
+        title="Strikethrough"
         @click="editor.chain().focus().toggleStrike().run()"
         :disabled="!editor.can().chain().focus().toggleStrike().run()"
         :class="{ 'is-active': editor.isActive('strike') }"
@@ -43,6 +47,7 @@
 
     <div class="text-alignment-btns">
       <button
+        title="Align left"
         @click="editor.chain().focus().setTextAlign('left').run()"
         :class="{ 'is-active': editor.isActive({ textAlign: 'left' }) }"
       >
@@ -51,6 +56,7 @@
         </client-only>
       </button>
       <button
+        title="Align right"
         @click="editor.chain().focus().setTextAlign('right').run()"
         :class="{ 'is-active': editor.isActive({ textAlign: 'right' }) }"
       >
@@ -59,6 +65,7 @@
         </client-only>
       </button>
       <button
+        title="Align justify"
         @click="editor.chain().focus().setTextAlign('justify').run()"
         :class="{ 'is-active': editor.isActive({ textAlign: 'justify' }) }"
       >
@@ -67,6 +74,7 @@
         </client-only>
       </button>
       <button
+        title="Align center"
         @click="editor.chain().focus().setTextAlign('center').run()"
         :class="{ 'is-active': editor.isActive({ textAlign: 'center' }) }"
       >
@@ -74,7 +82,10 @@
           <font-awesome-icon :icon="['fas', 'align-center']" />
         </client-only>
       </button>
-      <button @click="editor.chain().focus().unsetTextAlign().run()">
+      <button
+        title="Unset align"
+        @click="editor.chain().focus().unsetTextAlign().run()"
+      >
         <svg
           width="20px"
           height="20px"
@@ -87,13 +98,14 @@
           <path
             id="primary"
             d="M21,6H18M12,6H3m14,6H12M6,12H3m18,6H6M21,3,3,21"
-            style="fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
+            style="fill: none; stroke: #ffffff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
           ></path>
         </svg>
       </button>
     </div>
     <div class="list-formatting-btns">
       <button
+        title="Bullet list"
         @click="editor.chain().focus().toggleBulletList().run()"
         :class="{ 'is-active': editor.isActive('bulletList') }"
       >
@@ -102,6 +114,7 @@
         </client-only>
       </button>
       <button
+        title="Number list"
         @click="editor.chain().focus().toggleOrderedList().run()"
         :class="{ 'is-active': editor.isActive('orderedList') }"
       >
@@ -112,6 +125,7 @@
     </div>
     <div class="code-formatting-btns">
       <button
+        title="Code"
         @click="editor.chain().focus().toggleCode().run()"
         :disabled="!editor.can().chain().focus().toggleCode().run()"
         :class="{ 'is-active': editor.isActive('code') }"
@@ -121,6 +135,7 @@
         </client-only>
       </button>
       <button
+        title="Code block"
         @click="editor.chain().focus().toggleCodeBlock().run()"
         :class="{ 'is-active': editor.isActive('codeBlock') }"
       >
@@ -133,24 +148,27 @@
           xmlns:xlink="http://www.w3.org/1999/xlink"
         >
           <path
-            fill="#444"
+            fill="#fff"
             d="M2.1 3.1c0.2 1.3 0.4 1.6 0.4 2.9 0 0.8-1.5 1.5-1.5 1.5v1c0 0 1.5 0.7 1.5 1.5 0 1.3-0.2 1.6-0.4 2.9-0.3 2.1 0.8 3.1 1.8 3.1s2.1 0 2.1 0v-2c0 0-1.8 0.2-1.8-1 0-0.9 0.2-0.9 0.4-2.9 0.1-0.9-0.5-1.6-1.1-2.1 0.6-0.5 1.2-1.1 1.1-2-0.3-2-0.4-2-0.4-2.9 0-1.2 1.8-1.1 1.8-1.1v-2c0 0-1 0-2.1 0s-2.1 1-1.8 3.1z"
           ></path>
           <path
-            fill="#444"
+            fill="#fff"
             d="M13.9 3.1c-0.2 1.3-0.4 1.6-0.4 2.9 0 0.8 1.5 1.5 1.5 1.5v1c0 0-1.5 0.7-1.5 1.5 0 1.3 0.2 1.6 0.4 2.9 0.3 2.1-0.8 3.1-1.8 3.1s-2.1 0-2.1 0v-2c0 0 1.8 0.2 1.8-1 0-0.9-0.2-0.9-0.4-2.9-0.1-0.9 0.5-1.6 1.1-2.1-0.6-0.5-1.2-1.1-1.1-2 0.2-2 0.4-2 0.4-2.9 0-1.2-1.8-1.1-1.8-1.1v-2c0 0 1 0 2.1 0s2.1 1 1.8 3.1z"
           ></path>
         </svg>
       </button>
     </div>
     <div class="extra-formatting-btns">
-
-      <button @click="editor.chain().focus().unsetAllMarks().run()">
+      <button
+        title="Clear format"
+        @click="editor.chain().focus().unsetAllMarks().run()"
+      >
         <client-only>
           <font-awesome-icon :icon="['fas', 'eraser']" />
         </client-only>
       </button>
       <button
+        title="Paragraph"
         @click="editor.chain().focus().setParagraph().run()"
         :class="{ 'is-active': editor.isActive('paragraph') }"
       >
@@ -159,36 +177,42 @@
         </client-only>
       </button>
       <button
+        title="Heading 1"
         @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
         :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
       >
         h1
       </button>
       <button
+        title="Heading 2"
         @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
         :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
       >
         h2
       </button>
       <button
+        title="Heading 3"
         @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
         :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
       >
         h3
       </button>
       <button
+        title="Heading 4"
         @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
         :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }"
       >
         h4
       </button>
       <button
+        title="Heading 5"
         @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
         :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }"
       >
         h5
       </button>
       <button
+        title="Heading 6"
         @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
         :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }"
       >
@@ -198,6 +222,7 @@
 
 
       <button
+        title="Blockquote"
         @click="editor.chain().focus().toggleBlockquote().run()"
         :class="{ 'is-active': editor.isActive('blockquote') }"
       >
@@ -206,7 +231,7 @@
           height="22px"
           viewBox="0 0 16 16"
           xmlns="http://www.w3.org/2000/svg"
-          fill="#000000"
+          fill="#ffffff"
           class="bi bi-blockquote-left"
         >
           <path
@@ -214,7 +239,10 @@
           />
         </svg>
       </button>
-      <button @click="editor.chain().focus().setHorizontalRule().run()">
+      <button
+        title="Horizontal line"
+        @click="editor.chain().focus().setHorizontalRule().run()"
+      >
         <svg
           version="1.1"
           id="Capa_1"
@@ -229,7 +257,7 @@
             <g>
               <rect
                 y="139.474"
-                style="fill:#030303;"
+                style="fill:#fff;"
                 width="290.658"
                 height="11.711"
               />
@@ -237,9 +265,12 @@
           </g>
         </svg>
       </button>
-      <button @click="editor.chain().focus().setHardBreak().run()">
+      <button
+        title="Hard Break"
+        @click="editor.chain().focus().setHardBreak().run()"
+      >
         <svg
-          fill="#000000"
+          fill="#ffffff"
           height="20px"
           width="20px"
           version="1.1"
@@ -286,6 +317,7 @@
         </svg>
       </button>
       <button
+        title="Undo"
         @click="editor.chain().focus().undo().run()"
         :disabled="!editor.can().chain().focus().undo().run()"
       >
@@ -294,6 +326,7 @@
         </client-only>
       </button>
       <button
+        title="Redo"
         @click="editor.chain().focus().redo().run()"
         :disabled="!editor.can().chain().focus().redo().run()"
       >
@@ -304,10 +337,18 @@
     </div>
 
   </div>
-  <editor-content :editor="editor" />
+  <editor-content
+    class="border-2 border-gray-800 min-h-[50svh] mx-auto max-w-xl"
+    :editor="editor"
+  />
   <p class="character-count text-xs text-gray-500 pointer-events-none">
     {{ editor?.storage.characterCount.characters() }} characters / {{ editor?.storage.characterCount.words() }} words
   </p>
+  <CallToAction
+    button-text="Create Article"
+    class="bg-gray-800 text-white my-3"
+    @click="getDocument"
+  />
 </template>
 
 <script setup lang="ts">
@@ -317,28 +358,32 @@ import { Underline } from "@tiptap/extension-underline";
 import { CharacterCount } from "@tiptap/extension-character-count";
 import { TextAlign } from "@tiptap/extension-text-align";
 
-
-
 const editor = useEditor({
   content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
   extensions: [
     StarterKit,
     Underline,
     CharacterCount,
-    TextAlign
-  ]
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
+      alignments: ['left', 'right', 'justify', 'center']
+    })
+  ],
+  autofocus: "end"
 })
 
-TextAlign.configure({
-  types: ['heading', 'paragraph'],
-  alignments: ['left', 'right', 'justify', 'center']
-})
+const getDocument = () => {
+  console.log(editor.value?.getJSON())
+}
 
 </script>
 
 <style lang="scss">
 /* Basic editor styles */
 .tiptap {
+  outline: none;
+  
+
   > * + * {
     margin-top: 0.75em;
   }

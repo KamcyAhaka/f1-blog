@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { User } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { auth } from '~/firebase';
 
 export const useUserStore = defineStore(

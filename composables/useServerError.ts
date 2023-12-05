@@ -1,5 +1,5 @@
-import { AuthError } from 'firebase/auth';
-import { FirestoreError } from 'firebase/firestore';
+import type { AuthError } from 'firebase/auth';
+import type { FirestoreError } from 'firebase/firestore';
 
 export default () => {
   const throwAuthError = (authError: AuthError) => {

@@ -16,7 +16,7 @@ const props = defineProps<{
 const emits = defineEmits()
 
 const emitSubmit = (event: Event) => {
-  emits('handle-submit', event)
+  emits('handle-submit', event.target)
 }
 </script>
 

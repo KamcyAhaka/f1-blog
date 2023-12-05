@@ -13,6 +13,18 @@
           </client-only>
         </li>
       </NuxtLink>
+      <NuxtLink to="/admin/blogs/new">
+        <li class="profile-action cursor-pointer relative">
+          <p class="text-sm font-bold">Create a New Post</p>
+          <p class="text-xs text-gray-400 font-bold">Create a new blog post</p>
+          <client-only>
+            <font-awesome-icon
+              class="absolute top-1/2 -translate-y-1/2 right-2 text-sm text-gray-400"
+              :icon="['fas', 'chevron-right']"
+            />
+          </client-only>
+        </li>
+      </NuxtLink>
       <NuxtLink to="/posts/">
         <li class="profile-action cursor-pointer relative">
           <p class="text-sm font-bold">View Posts</p>

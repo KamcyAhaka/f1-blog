@@ -4,7 +4,6 @@
       @handle-submit="updateProfile"
       name="form-layout"
       formHeader="Edit your Profile"
-      ref="form"
       class="min-h-[70vh]"
     >
       <CustomInput
@@ -42,14 +41,14 @@
       />
 
       <CustomFileInput
+        type="file"
         id="photoUrl"
         name="photoUrl"
         label="Display picture"
-        type="file"
-        accepts=".png"
         placeholder=""
         required="true"
-        v-model="userProfile.photoUrl"
+        accept="image/*"
+        @input="validateFile"
       />
       <CustomSelect @option-selected="saveSelectedOption">
         <template #options>
@@ -74,6 +73,12 @@
       v-if="showToast"
     />
   </Transition>
+  <div
+    class="loading-overlay fixed top-0 left-0 w-[100vw] h-[100vh] bg-black opacity-40 flex justify-center items-center"
+    v-if="showLoader"
+  >
+    <component :is="ScaleLoader" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -81,13 +86,16 @@ definePageMeta({
   middleware: ['user-auth', 'verify-user']
 })
 
-import { User } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 
 import { useUserStore } from '~~/stores/user'
 import type Toast from '~/types/Toast';
 import type Country from '~/types/Country';
 
 const userStore = useUserStore()
+
+const ScaleLoader = resolveComponent('ScaleLoader');
+const showLoader = ref(false);
 
 const showToast = ref(false)
 
@@ -121,8 +129,19 @@ const userProfile = reactive({
   gender: "",
   mobileNumber: "",
   nationality: "",
-  photoUrl: ""
 })
+
+const userPhotoData = reactive<UserPhotoData>({
+  error: true,
+  photoBinary: null
+})
+
+type UserPhotoData = {
+  error: boolean
+  photoBinary: string | ArrayBuffer | null,
+  photoType?: string
+}
+
 
 const saveSelectedOption = (option: string) => {
   userProfile.nationality = option
@@ -152,25 +171,87 @@ onMounted(async () => {
   }
 })
 
-const updateProfile = async () => {
-  try {
-    const { data, error } = await useFetch<{ user: User }>("/api/update-profile", {
-      method: "POST",
-      body: userProfile
-    })
+const validateFile = async (event: Event) => {
+  const fileInput = event.target as HTMLInputElement;
+  const file = fileInput.files && fileInput.files[0];
 
-    if (error.value) {
-      useToastNotification(toast, "error", error.value.statusMessage!, showToast)
-    }
+  if (file && file.type.includes("image/")) {
+    userPhotoData.error = false
+    console.log(file.type);
 
-    if (data.value) {
-      userStore.user = data.value.user
-      useToastNotification(toast, "success", "Profile updated successfully", showToast, "/admin/")
+    try {
+      userPhotoData.photoBinary = await convertImgToBinary(file)
+      userPhotoData.photoType = file.type
+
+      console.log(userPhotoData.photoBinary)
+    } catch (error) {
+      userPhotoData.error = true
+      return
     }
-  } catch (error) {
-    console.log(error);
+  } else {
+    userPhotoData.error = true
+    useToastNotification(toast, "error", "Only images are allowed as profile pictures", showToast)
+    return
   }
 }
+
+const convertImgToBinary = (file: File): Promise<string | ArrayBuffer | null> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+
+    fileReader.onload = () => {
+      const imageBinary = fileReader.result;
+      resolve(imageBinary);
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+
+    fileReader.readAsBinaryString(file);
+  });
+};
+
+
+const updateProfile = async (eventTarget: HTMLFormElement) => {
+
+  if (userPhotoData.error === false) {
+    showLoader.value = true
+
+    try {
+      const { data, error } = await useFetch<{ user: User }>("/api/update-profile", {
+        method: "POST",
+        body: {
+          username: userProfile.username,
+          mobileNumber: userProfile.mobileNumber,
+          gender: userProfile.gender,
+          nationality: userProfile.nationality,
+          photoInfo: {
+            photoBinary: userPhotoData.photoBinary,
+            photoType: userPhotoData.photoType
+          }
+        }
+      })
+
+      showLoader.value = false
+
+      if (error.value) {
+        useToastNotification(toast, "error", error.value.statusMessage!, showToast)
+      }
+
+      if (data.value) {
+        userStore.user = data.value.user
+        useToastNotification(toast, "success", "Profile updated successfully", showToast, "/admin/")
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    useToastNotification(toast, "error", "Only images are allowed as profile pictures", showToast)
+  }
+
+}
+
 </script>
 
 <style lang="scss" scoped>

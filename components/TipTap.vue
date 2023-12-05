@@ -341,13 +341,13 @@
     class="border-2 border-gray-800 min-h-[50svh] mx-auto max-w-xl"
     :editor="editor"
   />
-  <p class="character-count text-xs text-gray-500 pointer-events-none">
+  <p class="text-center mx-auto mt-5 character-count text-xs text-gray-500 pointer-events-none">
     {{ editor?.storage.characterCount.characters() }} characters / {{ editor?.storage.characterCount.words() }} words
   </p>
   <CallToAction
     button-text="Create Article"
-    class="bg-gray-800 text-white my-3"
-    @click="getDocument"
+    class="bg-gray-800 mx-auto text-white my-3"
+    @click="$emit('articleSubmission', getDocument())"
   />
 </template>
 
@@ -357,6 +357,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { Underline } from "@tiptap/extension-underline";
 import { CharacterCount } from "@tiptap/extension-character-count";
 import { TextAlign } from "@tiptap/extension-text-align";
+import DOMPurify from "dompurify";
 
 const editor = useEditor({
   content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
@@ -372,9 +373,14 @@ const editor = useEditor({
   autofocus: "end"
 })
 
+const editorDocument = ref('')
+
 const getDocument = () => {
-  console.log(editor.value?.getJSON())
-}
+  // Your getDocument logic here
+  const content = editor.value?.getHTML() as string;
+  const clean = DOMPurify.sanitize(content);
+  return clean;
+};
 
 </script>
 
@@ -382,7 +388,7 @@ const getDocument = () => {
 /* Basic editor styles */
 .tiptap {
   outline: none;
-  
+
 
   > * + * {
     margin-top: 0.75em;

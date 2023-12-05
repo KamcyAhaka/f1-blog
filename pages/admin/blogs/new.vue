@@ -4,11 +4,13 @@
     form-header="Create a new blog post"
     class="gap-0 rounded-3xl overflow-hidden w-full basis-full"
   >
-    <TipTap />
+    <TipTap @articleSubmission="getDocument" />
   </NuxtLayout>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const getDocument = (document: string) => console.log(document);
+</script>
 
 <style lang="scss">
 .form-heading {

@@ -1,24 +1,45 @@
 import {
   AuthError,
-  User,
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
-import { FirestoreError, doc, setDoc } from 'firebase/firestore';
+import { FirestoreError, doc, setDoc, updateDoc } from 'firebase/firestore';
+import ImageKit from 'imagekit';
+
 import useServerError from '~/composables/useServerError';
 import { auth, db } from '~/firebase';
-import { useUserStore } from '~/stores/user';
 import CredentialsType from '~/types/CredentialsType';
 
 export default defineEventHandler(async (event) => {
-  const { username, mobileNumber, gender, nationality, photoUrl } =
+  let imagekit = new ImageKit({
+    urlEndpoint: 'https://ik.imagekit.io/chyktg5pia/f1-blog',
+    privateKey: 'private_xwXlbClfYahG3Me0vk+Ta294Ei0=',
+    publicKey: 'public_ZFxGy6YNSZm5h3DCg6499eSQ/zs=',
+  });
+
+  const { username, mobileNumber, gender, nationality, photoInfo } =
     await readBody<{
       username: string;
       mobileNumber: string;
       gender: string;
       nationality: string;
-      photoUrl: string;
+      photoInfo: {
+        photoBinary: string;
+        photoType: string;
+      };
     }>(event);
+
+  const uploadImage = await imagekit.upload({
+    file: photoInfo.photoBinary,
+    fileName:
+      photoInfo.photoType === 'image/webp'
+        ? `${username}.webp`
+        : photoInfo.photoType === 'image/png'
+        ? `${username}.png`
+        : `${username}.jpg`,
+  });
+
+  let photoUrl = '';
 
   const credentialsCookie = getCookie(event, 'credentials');
 
@@ -30,26 +51,37 @@ export default defineEventHandler(async (event) => {
 
   try {
     if (auth.currentUser) {
-      await setDoc(doc(db, 'admin', username), {
-        uid: auth.currentUser.uid,
+      const uploadImage = await imagekit.upload({
+        file: photoInfo.photoBinary,
+        fileName:
+          photoInfo.photoType === 'image/webp'
+            ? `${username}.webp`
+            : photoInfo.photoType === 'image/png'
+            ? `${username}.png`
+            : `${username}.jpg`,
+      });
+
+      await updateDoc(doc(db, 'admin', auth.currentUser.uid), {
         username,
         mobileNumber,
         gender,
         nationality,
-        photoUrl,
       });
 
       await updateProfile(auth.currentUser && auth.currentUser, {
         displayName: username,
+        photoURL: uploadImage.url,
       });
 
-      const credentials = await signInWithEmailAndPassword(
-        auth,
-        parsedCredentials.email,
-        parsedCredentials.password
-      );
+      if (uploadImage) {
+        const credentials = await signInWithEmailAndPassword(
+          auth,
+          parsedCredentials.email,
+          parsedCredentials.password
+        );
 
-      return { user: credentials.user };
+        return { user: credentials.user };
+      }
     } else {
       throwAuthError(new Error('No signed in user') as AuthError);
     }

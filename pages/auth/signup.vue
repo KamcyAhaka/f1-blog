@@ -13,6 +13,7 @@
         type="text"
         id="Username"
         required="true"
+        v-model="username"
       />
       <CustomInput
         class="mx-auto"
@@ -52,38 +53,61 @@
       v-if="showToast"
     />
   </Transition>
+  <div
+    class="loading-overlay fixed top-0 left-0 w-[100vw] h-[100vh] bg-black opacity-40 flex justify-center items-center"
+    v-if="showLoader"
+  >
+    <component :is="ScaleLoader" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import type Toast from '~/types/Toast';
+import type { User } from 'firebase/auth';
+
+import { useUserStore } from '~/stores/user';
+
 
 useHead({
   title: 'F1 Blog || Create Account'
 })
 
+const userStore = useUserStore()
+
 const { useToastNotification } = useToast()
+const ScaleLoader = resolveComponent('ScaleLoader');
+const showLoader = ref(false);
 const showToast = ref(false)
 const toast = reactive<Toast>({
   type: 'success',
   text: ''
 })
 
+const username = ref('');
 const email = ref('');
 const password = ref('');
 
 const handleSubmit = async () => {
+  showLoader.value = true
 
   try {
-    const { error } = await useFetch('/api/signup', {
+    const { data, error } = await useFetch<{ user: User }>('/api/signup', {
       method: 'POST',
-      body: { email: email.value, password: password.value },
+      body: { username: username.value, email: email.value, password: password.value },
     })
+
+    showLoader.value = false
 
     if (error && error.value?.statusCode === 500) {
       return useToastNotification(toast, 'error', error.value.statusMessage!, showToast)
     }
 
-    useToastNotification(toast, 'success', 'Account successfully created!', showToast, '/auth/signin')
+
+    if (data.value) {
+      userStore.user = data.value.user
+    }
+
+    useToastNotification(toast, 'success', 'Account successfully created!', showToast, '/admin/verify-email')
 
 
   } catch (error) {

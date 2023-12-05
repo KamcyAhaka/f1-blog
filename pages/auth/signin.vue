@@ -36,6 +36,12 @@
       v-if="showToast"
     />
   </Transition>
+  <div
+    class="loading-overlay fixed top-0 left-0 w-[100vw] h-[100vh] bg-black opacity-40 flex justify-center items-center"
+    v-if="showLoader"
+  >
+    <component :is="ScaleLoader" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -49,8 +55,11 @@ useHead({
 
 const userStore = useUserStore()
 
+const ScaleLoader = resolveComponent('ScaleLoader');
+
 const { useToastNotification } = useToast()
 const showToast = ref(false)
+const showLoader = ref(false);
 const toast = reactive<Toast>({
   type: 'success',
   text: ''
@@ -62,12 +71,14 @@ const userPassword = ref("")
 
 const handleSubmit = async () => {
   try {
-
+    showLoader.value = true
     const { data, error } = await useFetch<{ user: User }>('/api/signin', {
       method: 'POST',
       body: { email: userEmail.value, password: userPassword.value },
 
     })
+
+    showLoader.value = false
 
     if (error && error.value?.statusCode === 500) {
       return useToastNotification(toast, 'error', error.value.statusMessage!, showToast)
@@ -76,7 +87,6 @@ const handleSubmit = async () => {
     if (data.value) {
       userStore.user = data.value.user
     }
-
     useToastNotification(toast, 'success', 'Login successful! Redirecting...', showToast, '/admin/')
 
 

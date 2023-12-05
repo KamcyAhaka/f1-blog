@@ -7,7 +7,7 @@
         class="user-img w-14 h-14 rounded-full border-2 md:w-32 md:h-32"
       />
       <div class="user-bio-credetianls flex flex-col">
-        <p class="user-name font-bold md:text-xl">{{ user && user.providerData[0].displayName ? user.displayName : 'User'
+        <p class="user-name font-bold md:text-xl">{{ user?.displayName
         }}</p>
         <span class="user-email text-xs text-gray-400 font-bold md:text-sm">{{ user &&
           user.email }}</span>

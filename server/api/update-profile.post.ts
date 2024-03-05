@@ -1,92 +1,46 @@
-import {
-  AuthError,
-  signInWithEmailAndPassword,
-  updateProfile,
-} from 'firebase/auth';
-import { FirestoreError, doc, setDoc, updateDoc } from 'firebase/firestore';
-import ImageKit from 'imagekit';
+import { AuthError, updateProfile } from 'firebase/auth';
+import { FirestoreError, doc, updateDoc } from 'firebase/firestore';
 
 import useServerError from '~/composables/useServerError';
 import { auth, db } from '~/firebase';
-import CredentialsType from '~/types/CredentialsType';
+
+import { getRouterParams } from '#imports';
 
 export default defineEventHandler(async (event) => {
-  let imagekit = new ImageKit({
-    urlEndpoint: 'https://ik.imagekit.io/chyktg5pia/f1-blog',
-    privateKey: 'private_xwXlbClfYahG3Me0vk+Ta294Ei0=',
-    publicKey: 'public_ZFxGy6YNSZm5h3DCg6499eSQ/zs=',
-  });
-
-  const { username, mobileNumber, gender, nationality, photoInfo } =
+  const { username, mobileNumber, gender, nationality, photoURL, dialCode } =
     await readBody<{
       username: string;
       mobileNumber: string;
       gender: string;
       nationality: string;
-      photoInfo: {
-        photoBinary: string;
-        photoType: string;
-      };
+      photoURL: string;
+      dialCode: string;
     }>(event);
-
-  const uploadImage = await imagekit.upload({
-    file: photoInfo.photoBinary,
-    fileName:
-      photoInfo.photoType === 'image/webp'
-        ? `${username}.webp`
-        : photoInfo.photoType === 'image/png'
-        ? `${username}.png`
-        : `${username}.jpg`,
-  });
-
-  let photoUrl = '';
-
-  const credentialsCookie = getCookie(event, 'credentials');
-
-  const parsedCredentials: CredentialsType = JSON.parse(
-    credentialsCookie as string
-  );
 
   const { throwAuthError, throwDbError } = useServerError();
 
   try {
     if (auth.currentUser) {
-      const uploadImage = await imagekit.upload({
-        file: photoInfo.photoBinary,
-        fileName:
-          photoInfo.photoType === 'image/webp'
-            ? `${username}.webp`
-            : photoInfo.photoType === 'image/png'
-            ? `${username}.png`
-            : `${username}.jpg`,
-      });
-
       await updateDoc(doc(db, 'admin', auth.currentUser.uid), {
         username,
-        mobileNumber,
+        mobileNumber: `${dialCode} ${mobileNumber}`,
         gender,
         nationality,
       });
 
       await updateProfile(auth.currentUser && auth.currentUser, {
         displayName: username,
-        photoURL: uploadImage.url,
+        photoURL,
       });
 
-      if (uploadImage) {
-        const credentials = await signInWithEmailAndPassword(
-          auth,
-          parsedCredentials.email,
-          parsedCredentials.password
-        );
+      const user = await event.context.getUser();
 
-        return { user: credentials.user };
-      }
+      return user;
     } else {
-      throwAuthError(new Error('No signed in user') as AuthError);
+      await sendRedirect(event, '/auth/signin', 302);
     }
   } catch (error) {
-    let dbError = error as FirestoreError;
+    const dbError = error as FirestoreError;
     throwDbError(dbError);
   }
 });

@@ -30,9 +30,7 @@ export default defineEventHandler(async (event) => {
       await setDoc(
         doc(db, 'admin', credentials.user.uid),
         {
-          username: credentials.user.displayName
-            ? credentials.user.displayName
-            : 'User',
+          username: username,
         },
         { merge: true }
       );
@@ -40,16 +38,6 @@ export default defineEventHandler(async (event) => {
       await updateProfile(credentials.user, {
         displayName: username,
       });
-
-      const credentialsCookie = setCookie(
-        event,
-        'credentials',
-        JSON.stringify({ email, password }),
-        {
-          maxAge: 365 * 24 * 24,
-          httpOnly: true,
-        }
-      );
 
       return credentials;
     }

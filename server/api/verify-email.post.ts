@@ -1,33 +1,18 @@
-import {
-  AuthError,
-  applyActionCode,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
+import { AuthError, User, applyActionCode } from 'firebase/auth';
 import useServerError from '~/composables/useServerError';
 import { auth } from '~/firebase';
-import CredentialsType from '~/types/CredentialsType';
 
 export default defineEventHandler(async (event) => {
-  const { oobCode, lang } = getQuery<{ oobCode: string; lang: string }>(event);
-
-  const credentialsCookie = getCookie(event, 'credentials');
-
-  const parsedCredentials: CredentialsType = JSON.parse(
-    credentialsCookie as string
-  );
+  const { oobCode } = getQuery<{ oobCode: string; lang: string }>(event);
 
   const { throwAuthError } = useServerError();
 
   try {
-    await applyActionCode(auth, String(oobCode));
+    await applyActionCode(auth, oobCode);
 
-    const credentials = await signInWithEmailAndPassword(
-      auth,
-      parsedCredentials.email,
-      parsedCredentials.password
-    );
+    const user = await event.context.getUser();
 
-    return credentials.user;
+    return user;
   } catch (error) {
     let authError = error as AuthError;
 

@@ -12,19 +12,7 @@ export default defineEventHandler(async (event) => {
   try {
     const credentials = await signInWithEmailAndPassword(auth, email, password);
 
-    if (credentials) {
-      const credentialsCookie = setCookie(
-        event,
-        'credentials',
-        JSON.stringify({ email, password }),
-        {
-          maxAge: 365 * 24 * 24,
-          httpOnly: true,
-        }
-      );
-
-      return credentials;
-    }
+    return credentials;
   } catch (error) {
     let authError = error as AuthError;
     throwAuthError(authError);

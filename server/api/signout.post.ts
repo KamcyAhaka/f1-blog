@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     await signOut(auth);
+    deleteCookie(event, 'credentials');
   } catch (error) {
     let authError = error as AuthError;
     throwAuthError(authError);

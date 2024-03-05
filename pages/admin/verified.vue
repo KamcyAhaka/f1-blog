@@ -51,7 +51,7 @@ const oobCode = currentRoute.query.oobCode as string
 const userStore = useUserStore()
 
 try {
-  const { data, error } = await useFetch<{ verifiedUser: User }>(`/api/verify-email`, {
+  const { data, error } = await useFetch<{ user: User }>(`/api/verify-email`, {
     method: "POST",
     query: { oobCode },
   })
@@ -64,7 +64,7 @@ try {
 
     useToastNotification(toast, 'success', 'Successfully Verified!', showToast)
 
-    userStore.user = data.value.verifiedUser
+    userStore.user = data.value.user
   }
 } catch (error) {
   useToastNotification(toast, 'error', 'There was an error sending your request!', showToast)

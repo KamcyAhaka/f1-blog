@@ -45,6 +45,11 @@
         button-text="Create account"
         class="bg-gray-800 rounded-lg text-white mx-auto"
       />
+      <p class="mx-auto text-center">Already have an account? Sign in <NuxtLink
+          to="/auth/signin"
+          class="underline text-blue-950"
+        >now</NuxtLink>
+      </p>
     </NuxtLayout>
   </NuxtLayout>
   <Transition name="toast">
@@ -61,7 +66,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import type Toast from '~/types/Toast';
 import type { User } from 'firebase/auth';
 
@@ -117,5 +125,7 @@ const handleSubmit = async () => {
 
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style
+  lang="scss"
+  scoped
+></style>

@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout name="profile-layout">
-    <ul class="profile-actions-list mt-6 flex flex-col gap-7 md:w-full md:px-10">
+    <ul class="profile-actions-list my-6 flex flex-col gap-7 md:w-full md:px-10">
       <NuxtLink to="/admin/edit-profile">
         <li class="profile-action cursor-pointer relative">
           <p class="text-sm font-bold">Edit Profile</p>
@@ -74,7 +74,10 @@
   </transition>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useUserStore } from '~/stores/user';
 import type Toast from '~/types/Toast';
 
@@ -106,5 +109,7 @@ const logUserOut = async () => {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style
+  lang="scss"
+  scoped
+></style>

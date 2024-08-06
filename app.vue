@@ -10,9 +10,9 @@
 }
 
 /* leave transitions */
-.toast-leave-to {
+.toast-leave-to,
+.toast-enter-from {
   opacity: 0;
-  transform: translateY(-60px);
 }
 
 .toast-leave-active {
@@ -21,8 +21,8 @@
 
 @keyframes wobble {
   0% {
-    transform: translateY(-100px);
     opacity: 0;
+    transform: translateY(-100%);
   }
 
   50% {
@@ -53,6 +53,7 @@
   100% {
     transform: translateX(0px);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

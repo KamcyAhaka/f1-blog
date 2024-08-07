@@ -7,8 +7,7 @@ import {
   sendEmailVerification,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '~/firebase';
+import { auth } from '~/firebase';
 
 type AuthReturnType =
   | { type: 'success'; user: User }
@@ -30,14 +29,6 @@ export default function () {
       );
 
       await sendEmailVerification(credentials.user);
-
-      await setDoc(
-        doc(db, 'admin', credentials.user.uid),
-        {
-          username: username,
-        },
-        { merge: true }
-      );
 
       await updateProfile(credentials.user, {
         displayName: username,

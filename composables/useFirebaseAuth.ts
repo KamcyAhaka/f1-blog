@@ -4,8 +4,11 @@ import {
   signInWithEmailAndPassword,
   signOut,
   type User,
+  sendEmailVerification,
+  updateProfile,
 } from 'firebase/auth';
-import { auth } from '~/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '~/firebase';
 
 type AuthReturnType =
   | { type: 'success'; user: User }
@@ -16,7 +19,8 @@ export default function () {
 
   async function useSignUp(
     email: string,
-    password: string
+    password: string,
+    username: string
   ): Promise<AuthReturnType> {
     try {
       const credentials = await createUserWithEmailAndPassword(
@@ -24,6 +28,20 @@ export default function () {
         email,
         password
       );
+
+      await sendEmailVerification(credentials.user);
+
+      await setDoc(
+        doc(db, 'admin', credentials.user.uid),
+        {
+          username: username,
+        },
+        { merge: true }
+      );
+
+      await updateProfile(credentials.user, {
+        displayName: username,
+      });
 
       return { type: 'success', user: credentials.user };
     } catch (error) {

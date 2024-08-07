@@ -39,6 +39,7 @@
         label="Confirm Password"
         type="password"
         id="confirm-password"
+        v-model="confirmPassword"
         required="true"
       />
       <CallToAction
@@ -94,8 +95,13 @@ const toast = reactive<Toast>({
 const username = ref('');
 const email = ref('');
 const password = ref('');
+const confirmPassword = ref('');
 
 const handleSubmit = async () => {
+  if (confirmPassword.value !== password.value) {
+    return useToastNotification(toast, 'error', 'Passwords must match', showToast)
+  }
+
   showLoader.value = true
 
   try {

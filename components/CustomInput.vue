@@ -1,5 +1,5 @@
 <template>
-  <div class="input-container flex flex-col mb-3">
+  <div class="input-container flex flex-col mb-3 relative">
     <label
       :for="props.id"
       class="font-semibold"
@@ -10,7 +10,7 @@
       >*</span>
     </label>
     <input
-      :type="props.type"
+      :type="props.type === 'password' ? passwordType : props.type"
       :id="props.id"
       :name="props.name"
       :placeholder="props.placeholder"
@@ -19,10 +19,30 @@
       :value="modelValue"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement)?.value)"
     >
+    <button
+      v-if="props.type === 'password'"
+      class="absolute right-0 bottom-3 text-xl"
+      @click.prevent="togglePasswordVisibility"
+    >
+      <client-only>
+        <font-awesome-icon
+          v-if="passwordType === 'password'"
+          :icon="['fas', 'eye']"
+        />
+        <font-awesome-icon
+          v-else
+          :icon="['fas', 'eye-slash']"
+        />
+      </client-only>
+    </button>
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
+
 const props = defineProps<{
   label: string,
   type: string,
@@ -33,10 +53,23 @@ const props = defineProps<{
   placeholder?: string,
 }>()
 
+const passwordType = ref(props.type)
+
+const togglePasswordVisibility = () => {
+  if (passwordType.value === 'password') {
+    passwordType.value = 'text'
+  } else {
+    passwordType.value = 'password'
+  }
+}
+
 defineEmits(['update:modelValue'])
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 input {
   outline: none;
 }

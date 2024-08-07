@@ -105,7 +105,7 @@ const handleSubmit = async () => {
   showLoader.value = true
 
   try {
-    const response = await useSignUp(email.value, password.value)
+    const response = await useSignUp(email.value, password.value, username.value)
 
     showLoader.value = false
 

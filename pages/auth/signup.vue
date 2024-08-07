@@ -71,7 +71,6 @@
   lang="ts"
 >
 import type Toast from '~/types/Toast';
-import type { User } from 'firebase/auth';
 
 import { useUserStore } from '~/stores/user';
 
@@ -83,6 +82,7 @@ useHead({
 const userStore = useUserStore()
 
 const { useToastNotification } = useToast()
+const { useSignUp } = useFirebaseAuth()
 const ScaleLoader = resolveComponent('ScaleLoader');
 const showLoader = ref(false);
 const showToast = ref(false)
@@ -99,30 +99,22 @@ const handleSubmit = async () => {
   showLoader.value = true
 
   try {
-    const { data, error } = await useFetch<{ user: User }>('/api/signup', {
-      method: 'POST',
-      body: { username: username.value, email: email.value, password: password.value },
-    })
+    const response = await useSignUp(email.value, password.value)
 
     showLoader.value = false
 
-    if (error && error.value?.statusCode === 500) {
-      return useToastNotification(toast, 'error', error.value.statusMessage!, showToast)
+    if (response.type === 'error') {
+      return useToastNotification(toast, 'error', response.error.message, showToast)
     }
 
+    userStore.user = response.user;
 
-    if (data.value) {
-      userStore.user = data.value.user
-    }
-
-    useToastNotification(toast, 'success', 'Account successfully created!', showToast, '/admin/verify-email')
-
+    return useToastNotification(toast, 'success', 'Account successfully created!', showToast, '/admin/verify-email')
 
   } catch (error) {
     useToastNotification(toast, 'error', 'There was an error sending your request!', showToast)
   }
 }
-
 </script>
 
 <style

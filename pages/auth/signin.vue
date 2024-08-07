@@ -13,7 +13,7 @@
         type="email"
         id="email"
         required="true"
-        v-model="userEmail"
+        v-model="email"
       />
       <CustomInput
         class="mx-auto"
@@ -22,7 +22,7 @@
         type="password"
         id="Password"
         required="true"
-        v-model="userPassword"
+        v-model="password"
       />
       <CallToAction
         button-text="Sign in"
@@ -55,7 +55,6 @@
 >
 import type Toast from '~/types/Toast';
 import { useUserStore } from '~/stores/user';
-import type { User } from 'firebase/auth';
 
 useHead({
   title: 'F1 Blog || Sign In'
@@ -70,6 +69,7 @@ const redirectPath = router.currentRoute.value.query.redirect as string || '/adm
 const ScaleLoader = resolveComponent('ScaleLoader');
 
 const { useToastNotification } = useToast()
+const { useSignIn } = useFirebaseAuth()
 const showToast = ref(false)
 const showLoader = ref(false);
 const toast = reactive<Toast>({
@@ -77,30 +77,25 @@ const toast = reactive<Toast>({
   text: ''
 })
 
-const userEmail = ref("")
-const userPassword = ref("")
+const email = ref("")
+const password = ref("")
 
 
 const handleSubmit = async () => {
-  try {
-    showLoader.value = true
-    const { data, error } = await useFetch<{ user: User }>('/api/signin', {
-      method: 'POST',
-      body: { email: userEmail.value, password: userPassword.value },
+  showLoader.value = true
 
-    })
+  try {
+    const response = await useSignIn(email.value, password.value)
 
     showLoader.value = false
 
-    if (error && error.value?.statusCode === 500) {
-      return useToastNotification(toast, 'error', error.value.statusMessage!, showToast)
+    if (response.type === 'error') {
+      return useToastNotification(toast, 'error', response.error.message, showToast)
     }
 
-    if (data.value) {
-      userStore.user = data.value.user
+    userStore.user = response.user;
 
-      useToastNotification(toast, 'success', 'Login successful! Redirecting...', showToast, redirectPath)
-    }
+    return useToastNotification(toast, 'success', 'Login successful! Redirecting...', showToast, redirectPath)
 
   } catch (error) {
     useToastNotification(toast, 'error', 'There was an error sending your request!', showToast)

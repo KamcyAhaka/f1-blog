@@ -90,6 +90,7 @@ definePageMeta({
 })
 
 const { useToastNotification } = useToast()
+const { useSignOut } = useFirebaseAuth()
 
 const showToast = ref(false)
 const totalPostsNumber = ref(0)
@@ -110,11 +111,17 @@ onMounted(async () => {
 
 const logUserOut = async () => {
   try {
-    await useFetch('/api/signout', { method: "POST" })
+    const response = await useSignOut()
 
-    userStore.user = null
+    if (response.type === 'success') {
+      userStore.user = response.user!
+      useToastNotification(toast, 'success', 'You have been successfully logged out.', showToast, '/')
+    }
 
-    useToastNotification(toast, 'success', 'You have been successfully logged out.', showToast, '/')
+    if (response.type === 'error') {
+      useToastNotification(toast, 'error', response.error.message, showToast,)
+    }
+
   } catch (error) {
     useToastNotification(toast, 'error', 'An error occurred. Please try again later.', showToast,)
   }

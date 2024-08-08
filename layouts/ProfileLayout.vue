@@ -8,7 +8,14 @@
       />
       <div class="user-bio-credetianls flex flex-col">
         <p class="user-name font-bold md:text-xl">{{ user.name
-          }}</p>
+          }}
+          <client-only v-if="userStore.user?.emailVerified">
+            <font-awesome-icon
+              :icon="['fas', 'check-circle']"
+              class="text-green-700"
+            />
+          </client-only>
+        </p>
         <span class="user-email text-xs text-gray-400 font-bold md:text-sm">{{ user &&
           user.email }}</span>
       </div>

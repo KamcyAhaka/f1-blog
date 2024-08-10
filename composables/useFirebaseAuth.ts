@@ -14,9 +14,12 @@ type AuthReturnType =
   | { type: 'success'; user: User | null }
   | { type: 'error'; error: AuthError };
 
-export default function () {
-  const { throwAuthError } = useFirebaseError();
+type TokenReturnType =
+  | { type: 'success'; token: string }
+  | { type: 'redirect'; url: string }
+  | { type: 'error'; error: AuthError };
 
+export default function () {
   async function useSignUp(
     email: string,
     password: string,
@@ -38,7 +41,6 @@ export default function () {
       return { type: 'success', user: credentials.user };
     } catch (error) {
       let authError = error as AuthError;
-      // throwAuthError(authError);
       return { type: 'error', error: authError };
     }
   }
@@ -81,10 +83,24 @@ export default function () {
     }
   }
 
+  async function useTokenRetrieval(): Promise<TokenReturnType> {
+    try {
+      if (!auth.currentUser) {
+        return { type: 'redirect', url: '/auth/signin' };
+      }
+      const token = await auth.currentUser.getIdToken();
+      return { type: 'success', token };
+    } catch (error) {
+      let authError = error as AuthError;
+      return { type: 'error', error: authError };
+    }
+  }
+
   return {
     useSignUp,
     useSignIn,
     useSignOut,
     useEmailVerification,
+    useTokenRetrieval,
   };
 }

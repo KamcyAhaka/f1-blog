@@ -83,7 +83,7 @@ useHead({
 const userStore = useUserStore()
 
 const { useToastNotification } = useToast()
-const { useSignUp } = useFirebaseAuth()
+const { useSignUp, useTokenRetrieval } = useFirebaseAuth()
 const ScaleLoader = resolveComponent('ScaleLoader');
 const showLoader = ref(false);
 const showToast = ref(false)
@@ -105,15 +105,34 @@ const handleSubmit = async () => {
   showLoader.value = true
 
   try {
-    const response = await useSignUp(email.value, password.value, username.value)
+    const signUpResponse = await useSignUp(email.value, password.value, username.value)
 
     showLoader.value = false
 
-    if (response.type === 'error') {
-      return useToastNotification(toast, 'error', response.error.message, showToast)
+    if (signUpResponse.type === 'error') {
+      return useToastNotification(toast, 'error', signUpResponse.error.message, showToast)
     }
 
-    userStore.user = response.user;
+    userStore.user = signUpResponse.user;
+
+    const tokenObject = await useTokenRetrieval()
+
+    if (tokenObject.type === 'error') {
+      return useToastNotification(toast, 'error', tokenObject.error.message, showToast)
+    }
+
+    if (tokenObject.type === 'redirect') return navigateTo(tokenObject.url)
+
+    await useFetch('/api/admin/create', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${tokenObject.token}`
+      },
+      body: {
+        id: signUpResponse.user?.uid,
+        username: username.value
+      }
+    })
 
     return useToastNotification(toast, 'success', 'Account successfully created!', showToast, '/admin/verify-email')
 

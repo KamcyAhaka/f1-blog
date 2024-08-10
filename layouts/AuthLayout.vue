@@ -11,11 +11,13 @@
   </div>
 </template>
 
-<script setup lang="ts">
-const props = defineProps<{
-  formHeading: string
-}>()
+<script
+  setup
+  lang="ts"
+>
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style
+  lang="scss"
+  scoped
+></style>

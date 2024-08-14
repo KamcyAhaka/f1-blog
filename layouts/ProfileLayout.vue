@@ -42,12 +42,7 @@ const user = reactive({
 onMounted(() => {
   user.name = userStore.user?.displayName ? userStore.user?.displayName : 'User'
   user.email = userStore.user?.email as string
-
-  if (!userStore.user?.photoURL) {
-    user.photoURL = `https://api.dicebear.com/7.x/initials/svg?seed=${userStore.user?.displayName}&backgroundColor=${getRandomHexColor()}`
-  } else {
-    user.photoURL = userStore.user.photoURL
-  }
+  user.photoURL = userStore.user?.photoURL as string
 })
 </script>
 

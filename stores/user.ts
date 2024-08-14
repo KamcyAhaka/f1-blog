@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { User } from 'firebase/auth';
+import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from '~/firebase';
 
 export const useUserStore = defineStore(
@@ -7,11 +7,13 @@ export const useUserStore = defineStore(
   () => {
     const user: Ref<null | User> = ref(null);
 
-    const setCurrentUser = () => {
-      user.value = auth.currentUser && auth.currentUser;
-    };
+    async function watchUser() {
+      onAuthStateChanged(auth, (changedUser) => {
+        user.value = changedUser;
+      });
+    }
 
-    return { user, setCurrentUser };
+    return { user, watchUser };
   },
   { persist: true }
 );

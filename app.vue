@@ -1,3 +1,9 @@
+<script lang="ts">
+import { useUserStore } from '~/stores/user'
+
+onMounted(() => useUserStore().watchUser())
+</script>
+
 <template>
   <NuxtLayout>
     <NuxtPage />

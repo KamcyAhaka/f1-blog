@@ -7,11 +7,19 @@ import {
   sendEmailVerification,
   updateProfile,
   applyActionCode,
+  reauthenticateWithCredential,
+  type AuthCredential,
+  reload,
 } from 'firebase/auth';
 import { auth } from '~/firebase';
+import getRandomHexColor from '~/utils/getRandomColours';
 
 type AuthReturnType =
   | { type: 'success'; user: User | null }
+  | { type: 'error'; error: AuthError };
+
+type VerificationReturnType =
+  | { type: 'success'; result: true }
   | { type: 'error'; error: AuthError };
 
 type TokenReturnType =
@@ -32,10 +40,11 @@ export default function () {
         password
       );
 
-      await sendEmailVerification(credentials.user);
+      const photoURL = `https://api.dicebear.com/7.x/initials/svg?seed=${username}&backgroundColor=${getRandomHexColor()}`;
 
       await updateProfile(credentials.user, {
         displayName: username,
+        photoURL,
       });
 
       return { type: 'success', user: credentials.user };
@@ -73,10 +82,11 @@ export default function () {
 
   async function useEmailVerification(
     oobCode: string
-  ): Promise<AuthReturnType> {
+  ): Promise<VerificationReturnType> {
     try {
       await applyActionCode(auth, oobCode);
-      return { type: 'success', user: auth.currentUser };
+
+      return { type: 'success', result: true };
     } catch (error) {
       let authError = error as AuthError;
       return { type: 'error', error: authError };

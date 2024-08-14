@@ -25,6 +25,33 @@ onMounted(() => useUserStore().watchUser())
   transition: all 0.3s ease;
 }
 
+.alert-enter-active {
+  animation: appear 1s ease;
+  transition: opacity 0.5s ease, transform 0.3s ease;
+}
+
+/* leave transitions */
+.alert-leave-to,
+.alert-enter-from {
+  opacity: 0;
+}
+
+.alert-leave-active {
+  transition: opacity 0.5s ease, transform 0.3s ease;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+}
+
 @keyframes wobble {
   0% {
     opacity: 0;

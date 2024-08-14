@@ -107,9 +107,8 @@ const handleSubmit = async () => {
   try {
     const signUpResponse = await useSignUp(email.value, password.value, username.value)
 
-    showLoader.value = false
-
     if (signUpResponse.type === 'error') {
+      showLoader.value = false
       return useToastNotification(toast, 'error', signUpResponse.error.message, showToast)
     }
 
@@ -118,10 +117,14 @@ const handleSubmit = async () => {
     const tokenObject = await useTokenRetrieval()
 
     if (tokenObject.type === 'error') {
+      showLoader.value = false
       return useToastNotification(toast, 'error', tokenObject.error.message, showToast)
     }
 
-    if (tokenObject.type === 'redirect') return navigateTo(tokenObject.url)
+    if (tokenObject.type === 'redirect') {
+      showLoader.value = false
+      return navigateTo(tokenObject.url)
+    }
 
     await useFetch('/api/admin/create', {
       method: 'POST',
@@ -134,6 +137,7 @@ const handleSubmit = async () => {
       }
     })
 
+    showLoader.value = false
     return useToastNotification(toast, 'success', 'Account successfully created!', showToast, '/admin/verify-email')
 
   } catch (error) {

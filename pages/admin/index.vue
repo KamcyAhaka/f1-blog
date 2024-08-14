@@ -73,6 +73,12 @@
       v-if="showToast"
     />
   </transition>
+  <transition name="alert">
+    <Alert
+      text="Your account is unverified. Some actions can only be done with a verified account."
+      v-if="showAlert"
+    />
+  </transition>
 </template>
 
 <script
@@ -93,6 +99,7 @@ const { useToastNotification } = useToast()
 const { useSignOut } = useFirebaseAuth()
 
 const showToast = ref(false)
+const showAlert = ref(false)
 const totalPostsNumber = ref(0)
 
 const toast = reactive<Toast>({
@@ -106,6 +113,12 @@ onMounted(async () => {
   const coll = collection(db, "posts");
   const snapshot = await getCountFromServer(coll);
   totalPostsNumber.value = snapshot.data().count
+
+  showAlert.value = !userStore.user?.emailVerified!;
+
+  setTimeout(() => {
+    showAlert.value = false
+  }, 3000);
 })
 
 
@@ -126,11 +139,6 @@ const logUserOut = async () => {
     useToastNotification(toast, 'error', 'An error occurred. Please try again later.', showToast,)
   }
 }
-
-// import { collection, getCountFromServer } from 'firebase/firestore';
-// import { db } from '~/firebase/index.js';
-// import { collection, getCountFromServer } from 'firebase/firestore';
-// import { db } from '~/firebase/index.js';
 </script>
 
 <style

@@ -1,4 +1,7 @@
-<script lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useUserStore } from '~/stores/user'
 
 onMounted(() => useUserStore().watchUser())

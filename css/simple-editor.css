@@ -1,0 +1,248 @@
+/* Basic editor styles */
+.tiptap,
+.preview-container {
+  outline: none;
+  height: 100%;
+  /* Task list specific styles */
+  /* Code and preformatted text styles */
+  /* Link styles */
+  /* Table-specific styling */
+}
+.tiptap :first-child,
+.preview-container :first-child {
+  margin-top: 0;
+}
+.tiptap ul,
+.tiptap ol,
+.preview-container ul,
+.preview-container ol {
+  padding: 0 1rem;
+}
+.tiptap ul,
+.preview-container ul {
+  list-style: disc;
+}
+.tiptap ol,
+.preview-container ol {
+  list-style: decimal;
+}
+.tiptap ul[data-type=taskList],
+.preview-container ul[data-type=taskList] {
+  list-style: none;
+  margin-left: 0;
+  padding: 0;
+}
+.tiptap ul[data-type=taskList] li,
+.preview-container ul[data-type=taskList] li {
+  align-items: flex-start;
+  display: flex;
+}
+.tiptap ul[data-type=taskList] li > label,
+.preview-container ul[data-type=taskList] li > label {
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.tiptap ul[data-type=taskList] li > div,
+.preview-container ul[data-type=taskList] li > div {
+  flex: 1 1 auto;
+}
+.tiptap ul[data-type=taskList] input[type=checkbox],
+.preview-container ul[data-type=taskList] input[type=checkbox] {
+  cursor: pointer;
+}
+.tiptap ul[data-type=taskList] ul[data-type=taskList],
+.preview-container ul[data-type=taskList] ul[data-type=taskList] {
+  margin: 0;
+}
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6,
+.preview-container h1,
+.preview-container h2,
+.preview-container h3,
+.preview-container h4,
+.preview-container h5,
+.preview-container h6 {
+  line-height: 1.1;
+}
+.tiptap h1,
+.preview-container h1 {
+  font-size: 2em;
+}
+.tiptap h2,
+.preview-container h2 {
+  font-size: 1.5em;
+}
+.tiptap h3,
+.preview-container h3 {
+  font-size: 1.125em;
+}
+.tiptap h4,
+.preview-container h4 {
+  font-size: 1em;
+}
+.tiptap h5,
+.preview-container h5 {
+  font-size: 0.83em;
+}
+.tiptap h6,
+.preview-container h6 {
+  font-size: 0.67em;
+}
+.tiptap code,
+.preview-container code {
+  background-color: rgb(245, 232, 245);
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  padding: 0.25em 0.3em;
+}
+.tiptap pre,
+.preview-container pre {
+  background: #0D0D0D;
+  border-radius: 0.5rem;
+  color: #fff;
+  font-family: "JetBrainsMono", monospace;
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+}
+.tiptap pre code,
+.preview-container pre code {
+  background: none;
+  color: inherit;
+  font-size: 0.8rem;
+  padding: 0;
+}
+.tiptap hr,
+.preview-container hr {
+  @apply border-gray-200;
+  border: none;
+  border-top: 1px solid;
+  margin: 2rem 0;
+}
+.tiptap img,
+.preview-container img {
+  max-width: 100%;
+  height: auto;
+}
+.tiptap a,
+.preview-container a {
+  color: rgb(90, 68, 211);
+  cursor: pointer;
+}
+.tiptap a:hover,
+.preview-container a:hover {
+  color: rgb(71, 20, 165);
+}
+.tiptap blockquote,
+.preview-container blockquote {
+  padding-left: 1rem;
+  padding-block: 0.5em;
+  border-left: 2px solid rgba(13, 13, 13, 0.2);
+}
+.tiptap hr,
+.preview-container hr {
+  border: none;
+  border-top: 2px solid rgba(13, 13, 13, 0.1);
+  margin: 2rem 0;
+}
+.tiptap .is-active,
+.preview-container .is-active {
+  color: #fff;
+  fill: #fff;
+  background-color: #0a0a0a;
+}
+.tiptap table,
+.preview-container table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+.tiptap table td,
+.tiptap table th,
+.preview-container table td,
+.preview-container table th {
+  @apply border-gray-50;
+  border: 1px solid;
+  box-sizing: border-box;
+  min-width: 1em;
+  padding: 6px 8px;
+  position: relative;
+  vertical-align: top;
+}
+.tiptap table td > *,
+.tiptap table th > *,
+.preview-container table td > *,
+.preview-container table th > * {
+  margin-bottom: 0;
+}
+.tiptap table th,
+.preview-container table th {
+  @apply bg-gray-100;
+  font-weight: bold;
+  text-align: left;
+}
+.tiptap table .selectedCell:after,
+.preview-container table .selectedCell:after {
+  @apply bg-gray-200;
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+.tiptap table .column-resize-handle,
+.preview-container table .column-resize-handle {
+  @apply bg-[#FCA311];
+  bottom: -2px;
+  pointer-events: none;
+  position: absolute;
+  right: -2px;
+  top: 0;
+  width: 4px;
+}
+.tiptap .tableWrapper,
+.preview-container .tableWrapper {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+.tiptap.resize-cursor,
+.preview-container.resize-cursor {
+  cursor: ew-resize;
+  cursor: col-resize;
+}
+.tiptap .column-block,
+.preview-container .column-block {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 24px;
+  padding: 8px 0;
+}
+.tiptap .column,
+.preview-container .column {
+  overflow: auto;
+  border: 1px gray dashed;
+  border-radius: 8px;
+  padding: 8px;
+  margin: -8px;
+}
+.tiptap p.is-editor-empty:first-child::before,
+.preview-container p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}/*# sourceMappingURL=simple-editor.css.map */

@@ -1,13 +1,10 @@
-import { useUserStore } from '~/stores/user';
+export default defineNuxtRouteMiddleware((_to, _from) => {
+	const { $auth } = useNuxtApp();
+	const user = $auth.currentUser;
 
-export default defineNuxtRouteMiddleware((to, from) => {
-  const userStore = useUserStore();
-  const user = userStore.user;
+	if (!user) return;
 
-  if (
-    (user && user.displayName === null) ||
-    (user && user.displayName === 'User')
-  ) {
-    return navigateTo('/admin/edit-profile');
-  }
+	if (user.displayName === null || user.displayName === "User") {
+		return navigateTo("/admin/edit-profile");
+	}
 });

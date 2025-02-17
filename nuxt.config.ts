@@ -1,15 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
-  modules: [
-    '@nuxtjs/tailwindcss',
-    '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
-    'nuxt-swiper',
-    // 'nuxt-vuefire',
-    // '@nuxtjs/eslint-module',
-  ],
-  /*vuefire: {
+	devtools: { enabled: true },
+
+	modules: [
+		"@nuxtjs/tailwindcss",
+		"@pinia/nuxt",
+		"@pinia-plugin-persistedstate/nuxt",
+		// 'nuxt-vuefire',
+		// '@nuxtjs/eslint-module',
+		"nuxt-swiper",
+		"@nuxt/eslint",
+		"@nuxt/icon",
+	],
+
+	/*vuefire: {
     auth: {
       enabled: true,
     },
@@ -24,5 +28,7 @@ export default defineNuxtConfig({
       measurementId: 'G-FLQGPW9GCS',
     },
   },*/
-  css: ['@fortawesome/fontawesome-svg-core/styles.css'],
+	css: ["@fortawesome/fontawesome-svg-core/styles.css"],
+
+	compatibilityDate: "2024-08-21",
 });

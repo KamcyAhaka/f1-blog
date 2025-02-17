@@ -1,6 +1,6 @@
 type CredentialsType = {
-  email: string;
-  password: string;
+	email: string;
+	password: string;
 };
 
 export default CredentialsType;

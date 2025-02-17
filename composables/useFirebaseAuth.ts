@@ -1,116 +1,144 @@
 import {
-  createUserWithEmailAndPassword,
-  type AuthError,
-  signInWithEmailAndPassword,
-  signOut,
-  type User,
-  sendEmailVerification,
-  updateProfile,
-  applyActionCode,
-  reauthenticateWithCredential,
-  type AuthCredential,
-  reload,
-} from 'firebase/auth';
-import { auth } from '~/firebase';
-import getRandomHexColor from '~/utils/getRandomColours';
+	createUserWithEmailAndPassword,
+	type AuthError,
+	signInWithEmailAndPassword,
+	signOut,
+	type User,
+	updateProfile,
+	applyActionCode,
+	sendPasswordResetEmail,
+	reload,
+} from "firebase/auth";
+import getRandomHexColor from "~/utils/getRandomColours";
 
-type AuthReturnType =
-  | { type: 'success'; user: User | null }
-  | { type: 'error'; error: AuthError };
+type AuthReturnType = { type: "success"; user: User | null } | { type: "error"; error: AuthError };
 
-type VerificationReturnType =
-  | { type: 'success'; result: true }
-  | { type: 'error'; error: AuthError };
+type VerificationReturnType = { type: "success"; result: true } | { type: "error"; error: AuthError };
+
+type PasswordRetrievalReturnType = { type: "success"; result: true } | { type: "error"; error: AuthError };
 
 type TokenReturnType =
-  | { type: 'success'; token: string }
-  | { type: 'redirect'; url: string }
-  | { type: 'error'; error: AuthError };
+	| { type: "success"; token: string }
+	| { type: "redirect"; url: string }
+	| { type: "error"; error: AuthError };
 
 export default function () {
-  async function useSignUp(
-    email: string,
-    password: string,
-    username: string
-  ): Promise<AuthReturnType> {
-    try {
-      const credentials = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+	const admin = useState<User | null>("admin", () => null);
+	const adminCookie = useCookie<User | null>("admin-user");
 
-      const photoURL = `https://api.dicebear.com/7.x/initials/svg?seed=${username}&backgroundColor=${getRandomHexColor()}`;
+	// Restore state from cookie
+	if (import.meta.client && adminCookie.value) {
+		admin.value = adminCookie.value;
+	}
 
-      await updateProfile(credentials.user, {
-        displayName: username,
-        photoURL,
-      });
+	const { $auth } = useNuxtApp();
 
-      return { type: 'success', user: credentials.user };
-    } catch (error) {
-      let authError = error as AuthError;
-      return { type: 'error', error: authError };
-    }
-  }
-  async function useSignIn(
-    email: string,
-    password: string
-  ): Promise<AuthReturnType> {
-    try {
-      const credentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+	async function saveAdminState(user: User | null) {
+		admin.value = user; // Reactive state for components
+		if (import.meta.client) {
+			adminCookie.value = user ? user : null; // Persist state
+		}
+	}
 
-      return { type: 'success', user: credentials.user };
-    } catch (error) {
-      let authError = error as AuthError;
-      return { type: 'error', error: authError };
-    }
-  }
-  async function useSignOut(): Promise<AuthReturnType> {
-    try {
-      await signOut(auth);
-      return { type: 'success', user: null };
-    } catch (error) {
-      let authError = error as AuthError;
-      return { type: 'error', error: authError };
-    }
-  }
+	return {
+		async useSignUp(email: string, password: string, username: string): Promise<AuthReturnType> {
+			try {
+				const credentials = await createUserWithEmailAndPassword($auth, email, password);
 
-  async function useEmailVerification(
-    oobCode: string
-  ): Promise<VerificationReturnType> {
-    try {
-      await applyActionCode(auth, oobCode);
+				const photoURL = `https://api.dicebear.com/7.x/initials/svg?seed=${username}&backgroundColor=${getRandomHexColor()}`;
 
-      return { type: 'success', result: true };
-    } catch (error) {
-      let authError = error as AuthError;
-      return { type: 'error', error: authError };
-    }
-  }
+				await updateProfile(credentials.user, {
+					displayName: username,
+					photoURL,
+				});
 
-  async function useTokenRetrieval(): Promise<TokenReturnType> {
-    try {
-      if (!auth.currentUser) {
-        return { type: 'redirect', url: '/auth/signin' };
-      }
-      const token = await auth.currentUser.getIdToken();
-      return { type: 'success', token };
-    } catch (error) {
-      let authError = error as AuthError;
-      return { type: 'error', error: authError };
-    }
-  }
+				await saveAdminState(credentials.user);
+				return { type: "success", user: credentials.user };
+			} catch (error) {
+				const authError = error as AuthError;
+				return { type: "error", error: authError };
+			}
+		},
+		async useSignIn(email: string, password: string): Promise<AuthReturnType> {
+			try {
+				const credentials = await signInWithEmailAndPassword($auth, email, password);
 
-  return {
-    useSignUp,
-    useSignIn,
-    useSignOut,
-    useEmailVerification,
-    useTokenRetrieval,
-  };
+				await saveAdminState(credentials.user);
+				return { type: "success", user: credentials.user };
+			} catch (error) {
+				const authError = error as AuthError;
+				return { type: "error", error: authError };
+			}
+		},
+		async useSignOut(): Promise<AuthReturnType> {
+			try {
+				await signOut($auth);
+				await saveAdminState(null);
+				return { type: "success", user: null };
+			} catch (error) {
+				const authError = error as AuthError;
+				return { type: "error", error: authError };
+			}
+		},
+
+		async useOobVerification(oobCode: string): Promise<VerificationReturnType> {
+			try {
+				await applyActionCode($auth, oobCode);
+				await reload($auth.currentUser!);
+				await saveAdminState($auth.currentUser);
+				return { type: "success", result: true };
+			} catch (error) {
+				const authError = error as AuthError;
+				return { type: "error", error: authError };
+			}
+		},
+
+		async useTokenRetrieval(): Promise<TokenReturnType> {
+			try {
+				if (!$auth.currentUser) {
+					return { type: "redirect", url: "/auth/signin" };
+				}
+				const token = await $auth.currentUser.getIdToken();
+
+				if (token) return { type: "success", token };
+				else {
+					const error = new Error("Token not found") as AuthError;
+					return { type: "error", error };
+				}
+			} catch (error) {
+				const authError = error as AuthError;
+				return { type: "error", error: authError };
+			}
+		},
+
+		async useProfileUpdate(
+			user: User,
+			data: {
+				username: string;
+				photoURL: string;
+			},
+		) {
+			try {
+				await updateProfile(user, {
+					displayName: data.username,
+					photoURL: data.photoURL,
+				});
+
+				return { type: "success", result: true };
+			} catch (err) {
+				const error = err as AuthError;
+				return { type: "error", error };
+			}
+		},
+
+		async useSendPasswordReset(email: string): Promise<PasswordRetrievalReturnType> {
+			try {
+				await sendPasswordResetEmail($auth, email);
+				return { type: "success", result: true };
+			} catch (err) {
+				const error = err as AuthError;
+				return { type: "error", error };
+			}
+		},
+	};
 }
